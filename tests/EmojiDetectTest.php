@@ -1,7 +1,8 @@
 <?php
 
-class EmojiDetectTest extends \PHPUnit\Framework\TestCase {
+use PHPUnit\Framework\TestCase;
 
+class EmojiDetectTest extends TestCase {
   public function testDetectSimpleEmoji() {
     $string = '😻';
     $emoji = Emoji\detect_emoji($string);
@@ -86,7 +87,7 @@ class EmojiDetectTest extends \PHPUnit\Framework\TestCase {
   public function testDetectText() {
     $string = 'This has no emoji.';
     $emoji = Emoji\detect_emoji($string);
-    $this->assertCount(0, $emoji);  
+    $this->assertCount(0, $emoji);
   }
 
   public function testDetectInText() {
@@ -111,5 +112,4 @@ class EmojiDetectTest extends \PHPUnit\Framework\TestCase {
     $this->assertCount(1, $emoji);
     $this->assertSame('female-guard', $emoji[0]['short_name']);
   }
-
 }

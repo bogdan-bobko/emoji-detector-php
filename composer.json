@@ -18,10 +18,24 @@
   },
   "minimum-stability": "dev",
   "require": {
-    "php": ">=5.3",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "ext-json": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^4.8"
+    "phpunit/phpunit": "^7.5"
+  },
+  "config": {
+    "sort-packages": true,
+    "platform": {
+      "php": "7.1"
+    }
+  },
+  "scripts": {
+    "tests": "vendor/bin/phpunit --colors=always --config phpunit.xml tests/",
+    "test": "vendor/bin/phpunit --colors=always --config phpunit.xml"
+  },
+  "scripts-descriptions": {
+    "tests": "Runs all tests",
+    "test": "Runs one specified test"
   }
 }
