@@ -21,7 +21,7 @@ Usage
 
 ```php
 $input = "Hello 👍🏼 World 👨‍👩‍👦‍👦";
-$emoji = Emoji\detect_emoji($input);
+$emoji = Emoji\detectEmoji($input);
 
 print_r($emoji);
 ```
@@ -79,7 +79,7 @@ Array
 Since simply counting the number of unicode characters in a string does not tell you how many visible emoji are in the string, determining whether a single character is an emoji is more involved. This function will return the emoji data only if the string contains a single emoji character, and false otherwise.
 
 ```php
-$emoji = Emoji\is_single_emoji('👨‍👩‍👦‍👦');
+$emoji = Emoji\isSingleEmoji('👨‍👩‍👦‍👦');
 print_r($emoji);
 ```
 
@@ -106,7 +106,7 @@ Array
 ```
 
 ```php
-$emoji = Emoji\is_single_emoji('😻🐈');
+$emoji = Emoji\isSingleEmoji('😻🐈');
 // false
 ```
 

@@ -9,21 +9,22 @@ define('LONGEST_EMOJI', 8);
  * @param $string
  * @return array
  */
-function detect_emoji(string $string): array
+function detectEmoji(string $string): array
 {
     $prevencoding = mb_internal_encoding();
+
     mb_internal_encoding('UTF-8');
 
     $data = array();
 
     static $map;
     if (!isset($map)) {
-        $map = _load_map();
+        $map = loadMap();
     }
 
     static $regexp;
     if (!isset($regexp)) {
-        $regexp = _load_regexp();
+        $regexp = loadRegexp();
     }
 
     if (preg_match_all($regexp, $string, $matches)) {
@@ -74,7 +75,7 @@ function detect_emoji(string $string): array
     return $data;
 }
 
-function is_single_emoji(string $string)
+function isSingleEmoji(string $string)
 {
     $prevencoding = mb_internal_encoding();
     mb_internal_encoding('UTF-8');
@@ -84,7 +85,7 @@ function is_single_emoji(string $string)
         return false;
     }
 
-    $all_emoji = detect_emoji($string);
+    $all_emoji = detectEmoji($string);
 
     $emoji = false;
 
@@ -110,12 +111,12 @@ function is_single_emoji(string $string)
     return $emoji;
 }
 
-function _load_map(): array
+function loadMap(): array
 {
     return json_decode(file_get_contents(dirname(__FILE__) . '/map.json'), true);
 }
 
-function _load_regexp(): string
+function loadRegexp(): string
 {
     return '/(?:' . json_decode(file_get_contents(dirname(__FILE__) . '/regexp.json')) . ')/u';
 }
