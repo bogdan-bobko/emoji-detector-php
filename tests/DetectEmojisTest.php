@@ -2,12 +2,12 @@
 
 use PHPUnit\Framework\TestCase;
 
-class EmojiDetectTest extends TestCase
+class DetectEmojisTest extends TestCase
 {
     public function testDetectSimpleEmoji(): void
     {
         $string = '😻';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(1, $emoji);
         $this->assertSame('😻', $emoji[0]['emoji']);
         $this->assertSame('heart_eyes_cat', $emoji[0]['short_name']);
@@ -17,7 +17,7 @@ class EmojiDetectTest extends TestCase
     public function testDetectEvenSimplerEmoji(): void
     {
         $string = '❤️';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(1, $emoji);
         $this->assertSame('❤️', $emoji[0]['emoji']);
         $this->assertSame('heart', $emoji[0]['short_name']);
@@ -27,7 +27,7 @@ class EmojiDetectTest extends TestCase
     public function testDetectEmojiWithZJW(): void
     {
         $string = '👨‍👩‍👦‍👦';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(1, $emoji);
         $this->assertSame('man-woman-boy-boy', $emoji[0]['short_name']);
         $this->assertSame('1F468-200D-1F469-200D-1F466-200D-1F466', $emoji[0]['hex_str']);
@@ -36,7 +36,7 @@ class EmojiDetectTest extends TestCase
     public function testDetectEmojiWithZJW2(): void
     {
         $string = '👩‍❤️‍👩';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(1, $emoji);
         $this->assertSame('woman-heart-woman', $emoji[0]['short_name']);
         $this->assertSame('1F469-200D-2764-FE0F-200D-1F469', $emoji[0]['hex_str']);
@@ -45,7 +45,7 @@ class EmojiDetectTest extends TestCase
     public function testDetectEmojiWithSkinTone(): void
     {
         $string = '👍🏼';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(1, $emoji);
         $this->assertSame('👍🏼', $emoji[0]['emoji']);
         $this->assertSame('+1', $emoji[0]['short_name']);
@@ -56,7 +56,7 @@ class EmojiDetectTest extends TestCase
     public function testDetectMultipleEmoji(): void
     {
         $string = '👩❤️';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(2, $emoji);
         $this->assertSame('woman', $emoji[0]['short_name']);
         $this->assertSame('heart', $emoji[1]['short_name']);
@@ -65,7 +65,7 @@ class EmojiDetectTest extends TestCase
     public function testDetectFlagEmoji(): void
     {
         $string = '🇩🇪';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(1, $emoji);
         $this->assertSame('flag-de', $emoji[0]['short_name']);
     }
@@ -73,7 +73,7 @@ class EmojiDetectTest extends TestCase
     public function testDetectSymbolWithModifier(): void
     {
         $string = '♻️';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(1, $emoji);
         $this->assertSame('recycle', $emoji[0]['short_name']);
     }
@@ -81,7 +81,7 @@ class EmojiDetectTest extends TestCase
     public function testDetectCharacterSymbol(): void
     {
         $string = '™️';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertEquals(1, count($emoji));
         $this->assertEquals('tm', $emoji[0]['short_name']);
     }
@@ -89,7 +89,7 @@ class EmojiDetectTest extends TestCase
     public function testDetectEmojiWithZJW3(): void
     {
         $string = '🏳️‍🌈';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(1, $emoji);
         $this->assertSame('rainbow-flag', $emoji[0]['short_name']);
         $this->assertSame('1F3F3-FE0F-200D-1F308', $emoji[0]['hex_str']);
@@ -98,14 +98,14 @@ class EmojiDetectTest extends TestCase
     public function testDetectText(): void
     {
         $string = 'This has no emoji.';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(0, $emoji);
     }
 
     public function testDetectInText(): void
     {
         $string = 'This has an 🎉 emoji.';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(1, $emoji);
         $this->assertSame('tada', $emoji[0]['short_name']);
     }
@@ -114,7 +114,7 @@ class EmojiDetectTest extends TestCase
     {
         // Added in June 2017 http://www.unicode.org/Public/emoji/5.0/emoji-test.txt
         $string = 'guardswoman 💂‍♀️';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(1, $emoji);
         $this->assertSame('female-guard', $emoji[0]['short_name']);
     }
@@ -123,7 +123,7 @@ class EmojiDetectTest extends TestCase
     {
         // Added in June 2017 http://www.unicode.org/Public/emoji/5.0/emoji-test.txt
         $string = 'guardswoman 💂🏼‍♀️';
-        $emoji = Emoji\detectEmoji($string);
+        $emoji = Emoji\detectEmojis($string);
         $this->assertCount(1, $emoji);
         $this->assertSame('female-guard', $emoji[0]['short_name']);
     }

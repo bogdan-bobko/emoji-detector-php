@@ -21,7 +21,7 @@ Usage
 
 ```php
 $input = "Hello 👍🏼 World 👨‍👩‍👦‍👦";
-$emoji = Emoji\detectEmoji($input);
+$emoji = Emoji\detectEmojis($input);
 
 print_r($emoji);
 ```

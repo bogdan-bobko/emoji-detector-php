@@ -4,80 +4,114 @@ namespace Emoji;
 
 define('LONGEST_EMOJI', 8);
 
+function map(): array
+{
+    static $map;
+
+    if (!isset($map)) {
+        $map = loadMap();
+    }
+
+    return $map;
+}
+
+function loadMap(): array
+{
+    return json_decode(file_get_contents(dirname(__FILE__) . '/map.json'), true);
+}
+
+function regexp(): string
+{
+    static $regexp;
+
+    if (!isset($regexp)) {
+        $regexp = loadRegexp();
+    }
+
+    return $regexp;
+}
+
+function loadRegexp(): string
+{
+    return '/(?:' . json_decode(file_get_contents(dirname(__FILE__) . '/regexp.json')) . ')/u';
+}
+
+function stripEmojis(string $string): string
+{
+    $prevEncoding = mb_internal_encoding();
+    mb_internal_encoding('UTF-8');
+
+    $result = preg_replace(regexp(), '', $string);
+
+    if ($prevEncoding) {
+        mb_internal_encoding($prevEncoding);
+    }
+
+    return $result;
+}
+
 /**
  * Find all the emoji in the input string
  * @param $string
  * @return array
  */
-function detectEmoji(string $string): array
+function detectEmojis(string $string): array
 {
-    $prevencoding = mb_internal_encoding();
-
+    $prevEncoding = mb_internal_encoding();
     mb_internal_encoding('UTF-8');
 
+    $skinTones = array(
+        '1F3FB' => 'skin-tone-2',
+        '1F3FC' => 'skin-tone-3',
+        '1F3FD' => 'skin-tone-4',
+        '1F3FE' => 'skin-tone-5',
+        '1F3FF' => 'skin-tone-6',
+    );
+
     $data = array();
-
-    static $map;
-    if (!isset($map)) {
-        $map = loadMap();
-    }
-
-    static $regexp;
-    if (!isset($regexp)) {
-        $regexp = loadRegexp();
-    }
-
-    if (preg_match_all($regexp, $string, $matches)) {
-        foreach ($matches[0] as $ch) {
+    if (preg_match_all(regexp(), $string, $matches)) {
+        foreach ($matches[0] as $match) {
             $points = array();
-            for ($i = 0; $i < mb_strlen($ch); $i++) {
-                $points[] = strtoupper(dechex(uniord(mb_substr($ch, $i, 1))));
+            for ($i = 0; $i < mb_strlen($match); $i++) {
+                $points[] = strtoupper(dechex(uniOrd(mb_substr($match, $i, 1))));
             }
 
-            $hexstr = implode('-', $points);
+            $hexString = implode('-', $points);
 
-            if (array_key_exists($hexstr, $map)) {
-                $short_name = $map[$hexstr];
-            } else {
-                $short_name = null;
+            $shortName = null;
+            if (array_key_exists($hexString, map())) {
+                $shortName = map()[$hexString];
             }
 
-            $skin_tone = null;
-            $skin_tones = array(
-                '1F3FB' => 'skin-tone-2',
-                '1F3FC' => 'skin-tone-3',
-                '1F3FD' => 'skin-tone-4',
-                '1F3FE' => 'skin-tone-5',
-                '1F3FF' => 'skin-tone-6',
-            );
+            $skinTone = null;
 
-            foreach ($points as $pt) {
-                if (array_key_exists($pt, $skin_tones)) {
-                    $skin_tone = $skin_tones[$pt];
+            foreach ($points as $point) {
+                if (array_key_exists($point, $skinTones)) {
+                    $skinTone = $skinTones[$point];
                 }
             }
 
             $data[] = array(
-                'emoji' => $ch,
-                'short_name' => $short_name,
-                'num_points' => mb_strlen($ch),
+                'emoji' => $match,
+                'short_name' => $shortName,
+                'num_points' => mb_strlen($match),
                 'points_hex' => $points,
-                'hex_str' => $hexstr,
-                'skin_tone' => $skin_tone,
+                'hex_str' => $hexString,
+                'skin_tone' => $skinTone,
             );
         }
     }
 
-    if ($prevencoding) {
-        mb_internal_encoding($prevencoding);
+    if ($prevEncoding) {
+        mb_internal_encoding($prevEncoding);
     }
 
     return $data;
 }
 
-function isSingleEmoji(string $string)
+function isSingleEmoji(string $string): bool
 {
-    $prevencoding = mb_internal_encoding();
+    $prevEncoding = mb_internal_encoding();
     mb_internal_encoding('UTF-8');
 
     // If the string is longer than the longest emoji, it's not a single emoji
@@ -85,13 +119,12 @@ function isSingleEmoji(string $string)
         return false;
     }
 
-    $all_emoji = detectEmoji($string);
-
-    $emoji = false;
+    $allEmojis = detectEmojis($string);
+    $singleEmoji = count($allEmojis) === 1;
 
     // If there are more than one or none, return false immediately
-    if (count($all_emoji) == 1) {
-        $emoji = $all_emoji[0];
+    if ($singleEmoji) {
+        $emoji = $allEmojis[0];
 
         // Check if there are any other characters in the string
 
@@ -100,28 +133,18 @@ function isSingleEmoji(string $string)
 
         // If there are any characters left, then the string is not a single emoji
         if (strlen($string) > 0) {
-            $emoji = false;
+            $singleEmoji = false;
         }
     }
 
-    if ($prevencoding) {
-        mb_internal_encoding($prevencoding);
+    if ($prevEncoding) {
+        mb_internal_encoding($prevEncoding);
     }
 
-    return $emoji;
+    return $singleEmoji;
 }
 
-function loadMap(): array
-{
-    return json_decode(file_get_contents(dirname(__FILE__) . '/map.json'), true);
-}
-
-function loadRegexp(): string
-{
-    return '/(?:' . json_decode(file_get_contents(dirname(__FILE__) . '/regexp.json')) . ')/u';
-}
-
-function uniord($c): int
+function uniOrd(string $c): int
 {
     $ord0 = ord($c[0]);
     if ($ord0 >= 0 && $ord0 <= 127) {
